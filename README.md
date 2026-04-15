@@ -10,6 +10,16 @@ It compares deep learning models trained with multiple loss functions (including
 - Trains LSTM and GRU models using expanding window.
 - Compute RMSE, MAE, QLIKE, underprediction rate and Diebold Mariano tests.
 
+## The AFBRL Derivation
+
+Standard symmetric loss functions like Mean Squared Error (MSE) produce unbounded quadratic penalty growth during heavy-tailed structural breaks (e.g., market crashes), which can destabilise recurrent weight matrices. Conversely, purely bounded loss functions suffer from gradient saturation (vanishing gradients) during these same extreme events. 
+
+The **Asymmetric Fuzzy Bounded Recovery Loss (AFBRL)** solves this through three core mechanisms:
+
+1. **Bounded Relative Error ($e_t$):** Forecast errors are scaled relative to an econometric benchmark (GARCH(1,1)) and mapped to a strict [0, 1] interval. This prevents the initial error magnitude from exploding.
+2. **Asymmetric Fuzzy Gaussian Kernel:** The crisp relative error is mapped to a membership degree using a Gaussian kernel. To penalise the dangerous underprediction of volatility (risk underestimation), the Gaussian width ($\sigma$) is adaptive: it uses a narrower $\sigma_{strict}$ for underpredictions and a wider $\sigma_{loose}$ for overpredictions. This makes the model intolerant to downside risk while safely filtering out minor microstructure noise.
+3. **Dynamically Gated Linear Recovery ($R_t$):** To solve the vanishing gradient problem during massive market crashes, AFBRL introduces a linear recovery term. As the fuzzy membership approaches zero during a catastrophic tail event, a smooth activation gate $(1 - \mu(e_t))$ opens, applying a constant linear gradient. This bounded constant gradient forces the model to adapt to downside shocks without triggering the exploding gradients typical of MSE.
+
 ## Repository Layout
 
 - `Data/`
@@ -18,7 +28,7 @@ It compares deep learning models trained with multiple loss functions (including
   - `cleaned_volatility_data.csv`: cleaned dataset used by training and benchmarks.
   - `garch_forecasts.csv`: econometric forecast output.
 - `src/`
-  - `dataset.py`: sequence dataset construction and normalization.
+  - `dataset.py`: sequence dataset construction and normalisation.
   - `models.py`: LSTM and GRU forecasting models.
   - `losses.py`: QLIKE and original AFBRL loss implementations.
   - `afbrl.py`: improved AFBRL loss with recovery term.
