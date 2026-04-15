@@ -37,7 +37,7 @@ $$
 \mathcal{R}_t = \lambda \cdot (1 - \mu(e_t)) \cdot |y_t - \hat{y}_t|
 $$
 
-**Final Objective Function** Combining the bounded fuzzy penalty with the gated linear recovery, the final objective function minimized during training is:
+**Final Objective Function** Combining the bounded fuzzy penalty with the gated linear recovery, the final objective function minimised during training is:
 
 $$
 L_{AFBRL} = \frac{1}{N} \sum_{t=1}^N \left[ \left(1 - \exp\left(-\frac{e_t^2}{2\sigma_t^2}\right)\right) + \lambda \cdot \left(1 - \exp\left(-\frac{e_t^2}{2\sigma_t^2}\right)\right) \cdot |y_t - \hat{y}_t| \right]
