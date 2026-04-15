@@ -21,7 +21,7 @@ $$
 e_t = \frac{|y_t - \hat{y}_t|}{|y_t - \hat{y}_t| + |y_t - y_t^*|}
 $$
 
-**2. Asymmetric Fuzzy Gaussian Kernel** ($\mu(e_t)$) The crisp relative error is mapped to a membership degree using a Gaussian kernel. To penalise the dangerous underprediction of volatility (risk underestimation), the Gaussian width ($\sigma$) is adaptive: it uses a narrower $\sigma_{strict}$ for underpredictions and a wider $\sigma_{loose}$ for overpredictions:
+**2. Asymmetric Fuzzy Gaussian Kernel** ($\mu$($e_t$)) The crisp relative error is mapped to a membership degree using a Gaussian kernel. To penalise the dangerous underprediction of volatility (risk underestimation), the Gaussian width ($\sigma$) is adaptive: it uses a narrower $\sigma_{strict}$ for underpredictions and a wider $\sigma_{loose}$ for overpredictions:
 
 $$
 \mu(e_t) = \exp\left(-\frac{e_t^2}{2\sigma_t^2}\right)
