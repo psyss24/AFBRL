@@ -16,9 +16,18 @@ Standard symmetric loss functions like Mean Squared Error (MSE) produce unbounde
 
 The **Asymmetric Fuzzy Bounded Recovery Loss (AFBRL)** solves this through three core mechanisms:
 
-1. **Bounded Relative Error ($e_t$):** Forecast errors are scaled relative to an econometric benchmark (GARCH(1,1)) and mapped to a strict [0, 1] interval. This prevents the initial error magnitude from exploding.
-2. **Asymmetric Fuzzy Gaussian Kernel:** The crisp relative error is mapped to a membership degree using a Gaussian kernel. To penalise the dangerous underprediction of volatility (risk underestimation), the Gaussian width ($\sigma$) is adaptive: it uses a narrower $\sigma_{strict}$ for underpredictions and a wider $\sigma_{loose}$ for overpredictions. This makes the model intolerant to downside risk while safely filtering out minor microstructure noise.
-3. **Dynamically Gated Linear Recovery ($R_t$):** To solve the vanishing gradient problem during massive market crashes, AFBRL introduces a linear recovery term. As the fuzzy membership approaches zero during a catastrophic tail event, a smooth activation gate $(1 - \mu(e_t))$ opens, applying a constant linear gradient. This bounded constant gradient forces the model to adapt to downside shocks without triggering the exploding gradients typical of MSE.
+**1. Bounded Relative Error ($e_t$)** Forecast errors are scaled relative to an econometric benchmark (we use GARCH(1,1)) and mapped to a strict [0, 1] interval. This prevents the initial error magnitude from exploding:
+$$e_t = \frac{|y_t - \hat{y}_t|}{|y_t - \hat{y}_t| + |y_t - y_t^*|}$$
+
+**2. Asymmetric Fuzzy Gaussian Kernel ($\mu(e_t)$)** The crisp relative error is mapped to a membership degree using a Gaussian kernel. To penalise the dangerous underprediction of volatility (risk underestimation), the Gaussian width ($\sigma$) is adaptive: it uses a narrower $\sigma_{strict}$ for underpredictions and a wider $\sigma_{loose}$ for overpredictions:
+$$\mu(e_t) = \exp\left(-\frac{e_t^2}{2\sigma_t^2}\right)$$
+$$\sigma_t = \begin{cases} \sigma_{strict} & \text{if } \hat{y}_t < y_t \\ \sigma_{loose} & \text{if } \hat{y}_t \ge y_t \end{cases}$$
+
+**3. Dynamically Gated Linear Recovery ($\mathcal{R}_t$)** To solve the vanishing gradient problem during massive market crashes, AFBRL introduces a linear recovery term. As the fuzzy membership approaches zero during a catastrophic tail event, a smooth activation gate opens, applying a constant linear gradient. 
+$$\mathcal{R}_t = \lambda \cdot (1 - \mu(e_t)) \cdot |y_t - \hat{y}_t|$$
+
+**Final Objective Function** Combining the bounded fuzzy penalty with the gated linear recovery, the final objective function minimized during training is:
+$$L_{AFBRL} = \frac{1}{N} \sum_{t=1}^N \left[ \left(1 - \exp\left(-\frac{e_t^2}{2\sigma_t^2}\right)\right) + \lambda \cdot \left(1 - \exp\left(-\frac{e_t^2}{2\sigma_t^2}\right)\right) \cdot |y_t - \hat{y}_t| \right]$$
 
 ## Repository Layout
 
