@@ -9,7 +9,7 @@ It compares deep learning models trained with multiple loss functions (including
 - Builds econometric benchmark forecasts (GARCH, EGARCH, GJR-GARCH, HAR-RV).
 - Trains LSTM and GRU models using expanding window.
 - Compute RMSE, MAE, QLIKE, underprediction rate and Diebold Mariano tests.
-## The AFBRL Derivation Overview
+## Deriving AFBRL
 
 Standard symmetric loss functions like Mean Squared Error (MSE) produce unbounded quadratic penalty growth during heavy-tailed structural breaks (e.g., market crashes), which can destabilize recurrent weight matrices. Conversely, purely bounded loss functions suffer from gradient saturation (vanishing gradients) during these same extreme events. 
 
